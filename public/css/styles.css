@@ -1455,6 +1455,7 @@ button:disabled { cursor: wait; opacity: .65; }
 .plan-card :where(h2, p), .product-summary h1, .lista-admin h3 { overflow-wrap: anywhere; }
 .product-summary, .member-panel { min-width: 0; }
 .reclamo-section { margin-top: 2rem; }
+.reclamo-section .text-link { color: #075c4d; }
 .admin-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
 .admin-layout .form-actions { margin-top: 1rem; }
 .lista-admin { display: grid; gap: .85rem; margin-top: 1rem; }
