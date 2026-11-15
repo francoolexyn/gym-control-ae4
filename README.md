@@ -1,161 +1,83 @@
-# Gym Control - Actividades Evaluativas 1 y 2
+# Gym Control · AE4 / TIFAS
 
-Frontend estático para consultar y seleccionar visualmente planes de un gimnasio. El proyecto implementa **RF05 - Gestión de planes** y representa parcialmente **RF06 - Gestión de membresías**, sin realizar asignaciones ni guardar datos.
+Gym Control permite consultar y comparar planes de gimnasio, elegir una membresía y consultar su vigencia. El administrador gestiona el catálogo. La aplicación reúne la portada, la tabla, las tarjetas, el detalle y el formulario de la AE1 en una SPA con JavaScript Vanilla. PHP controla las operaciones y PDO conecta con la base MySQL mediante el controlador `pdo_mysql`.
 
-## Tecnologías
+- [Análisis y diseño de la AE1](docs/Gym_Control_AE1_Analisis_y_Diseno.pdf)
+- [Informe técnico final de la AE4](docs/Gym_Control_AE4_Informe_Tecnico.pdf)
+- [Guion del coloquio](docs/Defensa_AE4.md)
+- [Evidencias de Lighthouse y pruebas](docs/evidencias/README.md)
 
-- HTML5
-- CSS3
-- JavaScript
+## Estructura
 
-
-
-## Páginas
-
-- `index.html`: portada principal.
-- `listado_tabla.html`: listado de planes en una tabla HTML.
-- `listado_box.html`: listado de planes en cards.
-- `js/app.js`: buscador y filtro del catálogo, carga HTTP y preselección del plan elegido; registro y acceso de socios; formulario de reclamos.
-- `data/planes.json`: catálogo de los cuatro planes de ejemplo del TP1.
-- `producto.html`: detalle del Plan Mensual y formulario de reclamos y consultas.
-- `data/confirmacion-reclamo.json`: respuesta simulada del servidor al enviar un reclamo.
-- `comprar.html`: formulario visual para seleccionar un plan.
-- `acceso.html`: ingreso, registro y vista del socio autenticado.
-- `data/usuarios.json`: socios de prueba; guarda una sal y el resumen SHA-256 de la clave, nunca la clave.
-- `js/subtotal.js`: calcula en pantalla el subtotal segun la cantidad elegida.
-- `js/cupon.js`: valida el código de descuento `UCP10` en la pantalla de compra.
-
-## Ejecución
-
-Las tarjetas 3, 4 y 11 requieren un servidor HTTP para cargar los JSON con `fetch()`. Abrir el HTML con doble clic (`file://`) no permite probar correctamente esa petición.
-
-Con Python instalado, ejecutar `iniciar.bat` en Windows o abrir una terminal en la carpeta del proyecto y ejecutar:
-
-```sh
-py -m http.server 8000 --bind 127.0.0.1
+```text
+gym-control-ae4/
+├── public/                  Vista SPA
+│   ├── index.html           Vistas semánticas y formularios
+│   ├── css/styles.css       Maqueta responsive de AE1 con ajustes de accesibilidad
+│   └── js/app.js            Navegación, fetch, estado de la interfaz y renderizado
+├── api/                     Controladores REST y utilidades HTTP y de sesión
+├── models/                  Acceso a datos mediante PDO
+├── config/                  Conexión PDO y configuración local
+├── database/                Esquema SQL y catálogo inicial
+├── scripts/                 Alta de cuentas de demostración o administrador por CLI
+└── docs/                    Antecedentes, informe, evidencias y guion de defensa
 ```
 
-Si la instalación usa el comando `python`, reemplazar `py` por `python`. Abrir `http://localhost:8000/index.html` y elegir **Planes en cards**. Mantener abierta la terminal; `Ctrl+C` detiene el servidor. También se puede usar **Open with Live Server** desde Visual Studio Code si la extensión está instalada.
+Flujo MVC desacoplado: **vista HTML/CSS + JavaScript → fetch HTTP/JSON → controladores PHP → modelos PDO → MySQL**. La vista permanece en un documento HTML y cambia de sección mediante rutas con fragmentos. El navegador comparte origen con la API.
 
-## Startup Relámpago y tarjeta 3
+## Instalación en Windows con XAMPP
 
-Se implementa la **opción 3: Buscador y filtro de catálogo en tiempo real**, manteniendo la temática del gimnasio. La fundamentación utiliza **SOHDM**, con un escenario de exploración y búsqueda y su mapa navegacional.
+1. Extraé el ZIP o cloná el repositorio dentro de `C:\xampp\htdocs\gym-control-ae4`. Verificá que `public\index.html` y `database\gym_control.sql` estén dentro de esa carpeta.
+2. Abrí el panel de XAMPP e iniciá **Apache** y **MySQL**. En XAMPP 8.2.12, el servicio rotulado MySQL ejecuta MariaDB 10.4.32. Se usó esa distribución para las pruebas.
+3. Abrí [phpMyAdmin](http://localhost/phpmyadmin/), ingresá a **Importar**, elegí `database/gym_control.sql` y ejecutá la importación. Se crean `gym_control`, cuatro tablas y los cuatro planes de la AE1. Usá una base separada de cualquier instancia existente con datos reales.
+4. Si configuraste otro usuario, contraseña o puerto, copiá `config/local.ejemplo.php` a `config/local.php` y ajustá los valores. El valor inicial coincide con XAMPP local (usuario `root`, puerto 3306, clave vacía). Para otra instalación, usá una cuenta de base con permisos limitados a las tablas del sistema.
+5. Confirmá que `extension=pdo_mysql` y `extension=mbstring` estén activas en `C:\xampp\php\php.ini`. La configuración de Apache debe permitir los archivos `.htaccess` de `htdocs` y tener `mod_rewrite` y `mod_headers` habilitados. La SPA usa rutas con `#` y abre en [http://localhost/gym-control-ae4/public/](http://localhost/gym-control-ae4/public/). Si Apache usa otro puerto, incluilo en la URL.
+6. Creá una cuenta de socio desde **Ingresar → Crear cuenta**. Para crear un administrador, abrí PowerShell y ejecutá estos comandos. El script solicita la clave por la entrada estándar.
 
-- Eventos `input`, `change` y `click` mediante `addEventListener()` en `js/app.js`.
-- Carga completa de `data/planes.json` con `fetch()` y `async/await`.
-- Filtrado en memoria con `.filter()` por nombre, descripción o categoría, combinado con duración.
-- Búsqueda sin distinción de mayúsculas, tildes o espacios exteriores.
-- Tarjetas, contador y mensajes actualizados en el DOM, sin recargar ni repetir la petición al filtrar.
-- Estados de carga, catálogo vacío, búsqueda sin resultados y error con reintento.
-- El enlace de cada resultado lleva a `comprar.html?plan=...` y preselecciona el plan.
+   ```powershell
+   Set-Location C:\xampp\htdocs\gym-control-ae4
+   & C:\xampp\php\php.exe scripts/crear-usuario.php admin "Administrador de prueba" admin@gymcontrol.test
+   ```
 
-El trabajo anterior de subtotal y cupón se conserva en `js/subtotal.js` y `js/cupon.js`. La validación del cupón mantiene su comportamiento original: muestra el mensaje del beneficio y no modifica el subtotal. Esta actividad no procesa compras ni guarda membresías.
+7. Ingresá como administrador y abrí **Administrar planes**. Para demostrar una baja, creá un plan de prueba y eliminalo antes de vincularlo a una membresía o consulta.
 
-### Demostración
+## Casos de uso y persistencia
 
-1. Abrir **Planes en cards**: aparecen cuatro planes cargados del JSON.
-2. Buscar `renovacion`: aparece el Plan Mensual aunque su descripción contiene `renovación` con tilde.
-3. Buscar `progreso` y elegir `6 meses`: aparece el Plan Semestral.
-4. Mantener esa búsqueda y elegir `1 mes`: aparece el mensaje sin resultados.
-5. Pulsar **Limpiar filtros**: vuelven los cuatro planes.
-6. Elegir el Plan Trimestral: se abre el formulario con el plan marcado y subtotal de $67.500.
-7. Para simular un error HTTP, renombrar temporalmente `data/planes.json`, recargar, restaurar el nombre y pulsar **Reintentar carga**.
+| Antecedente | Recorrido en AE4 | Datos |
+| --- | --- | --- |
+| CU01 · Consultar planes | Portada → Ver planes | `planes` |
+| CU02 · Visualizar listado | Tabla y tarjetas con búsqueda | `planes` |
+| CU03 · Consultar detalle | Ficha dinámica del plan elegido | `planes` |
+| CU04 · Seleccionar un plan | Ingreso, selección, confirmación e historial | `usuarios`, `planes`, `membresias` |
+| RF05 · Gestión de planes | Alta, consulta, edición y baja con rol administrador | `planes` |
+| AE2 · Tarjetas 3, 4 y 11 | Filtro, cuenta persistida y reclamos/consultas en la ficha | `planes`, `usuarios`, `consultas` |
 
-La búsqueda `mensual` devuelve también el Plan Anual porque su descripción contiene “valor mensual”; el filtro consulta todos los campos indicados.
+Cada cantidad representa períodos consecutivos del mismo plan para la misma cuenta. La primera membresía empieza en la fecha local argentina y su fin se excluye de la vigencia. Si existe una vigente o programada, el nuevo período empieza cuando finaliza el último. El servidor calcula el total en pesos y aplica el 10 % para `UCP10`. El importe, el nombre del plan y el medio de pago se guardan con la membresía. El cobro se gestiona de forma presencial.
 
-### Pruebas automáticas
+## API
 
-Se realizaron 36 comprobaciones con Google Chrome. Para reproducirlas, con Node.js y Chrome instalados:
+Base local `http://localhost/gym-control-ae4/api/`. Éxito como objeto JSON, errores de aplicación con `{"error":"mensaje"}`. Las escrituras JSON usan `Content-Type: application/json`. Las escrituras autenticadas requieren la cookie de sesión y el encabezado `X-CSRF-Token` que devuelve `login.php`.
 
-```sh
-npm install
-npm test
-```
+| Método | Ruta relativa | Acción y acceso |
+| --- | --- | --- |
+| GET | `planes.php` | Catálogo público |
+| GET | `planes.php?id=N` | Detalle público |
+| POST | `planes.php` | Alta, administrador |
+| PUT | `planes.php?id=N` | Edición, administrador |
+| DELETE | `planes.php?id=N` | Baja, administrador |
+| POST | `usuarios.php` | Registro público con rol socio |
+| GET | `login.php` | Recupera la sesión activa |
+| POST | `login.php` | Verifica la clave y abre sesión |
+| DELETE | `login.php` | Cierra la sesión activa |
+| GET | `membresias.php` | Historial de la cuenta de socio autenticada |
+| POST | `membresias.php` | Asigna o renueva una membresía propia |
+| POST | `consultas.php` | Registra un reclamo o consulta de socio |
 
-Las pruebas levantan su propio servidor local, comprueban la interacción y generan el registro y las capturas en `docs/`. Solo son necesarias dependencias de Node para las pruebas; el sitio usa HTML, CSS y JavaScript sin bibliotecas de producción.
+## Auditoría y demostración
 
-## Tarjeta 4: registro y acceso de socios
+1. En Chrome, abrí la SPA y usá **Tab** para recorrer enlaces, controles y botones. Activá los controles con **Enter**. Escribí los datos de formulario cuando el campo tenga foco.
+2. Abrí DevTools con `F12`, seleccioná **Lighthouse**, elegí **Accessibility** y ejecutá **Analyze page load**. Auditá también la vista de selección con una sesión de socio activa y el panel de administrador. Si corre en un perfil con extensiones, usá un perfil limpio.
+3. En **Network → Fetch/XHR**, confirmá una membresía y revisá `POST membresias.php`, el HTTP 201 y el JSON. Volvé a **Mi cuenta** para comprobar el historial. Después de cerrar sesión, ingresar directo a `/gym-control-ae4/api/membresias.php` devuelve 401 con JSON.
+4. Para respaldar el código, usá el ZIP de entrega. Para respaldar datos de una instalación que ya se utilizó, exportá la base por separado desde phpMyAdmin.
 
-Se implementa la **opción 4: Módulo de registro y autenticación de usuarios**. La fundamentación utiliza **VSDM**: el sitio define una vista para el visitante y otra para el socio autenticado.
-
-- Envío de los formularios capturado con `addEventListener('submit', ...)` y `preventDefault()` en `js/app.js`.
-- Validación de campos vacíos con `.trim()`, formato de e-mail, longitud mínima de 8 caracteres y coincidencia de claves (`type="password"`).
-- Verificación simulada con `fetch()` y `async/await` sobre `data/usuarios.json`: la clave ingresada se resume con SHA-256 y se compara con el resumen guardado.
-- Mensaje genérico ante credenciales incorrectas, estados de verificación y errores HTTP o de red.
-- Vista del socio con plan, estado de la membresía (activa, por vencer, vencida o sin membresía), vencimiento y días restantes.
-- El enlace del encabezado cambia de **Ingresar** a **Mi cuenta** y `comprar.html` precarga nombre y e-mail del socio.
-- La sesión se guarda en `sessionStorage` sin la clave ni su resumen, y se borra al cerrar sesión.
-
-Cuentas de prueba (clave `gimnasio2026`):
-
-| E-mail | Membresía |
-| --- | --- |
-| `lucia.benitez@gymcontrol.test` | Plan Semestral, activa hasta el 31/03/2027 |
-| `martin.rios@gymcontrol.test` | Plan Mensual, vencida el 31/08/2026 |
-
-El registro de cuentas nuevas es una simulación: comprueba por HTTP que el e-mail no exista e inicia la sesión, pero no agrega datos al JSON. Un sistema real verificaría la clave en el servidor, bajo HTTPS y con un algoritmo de resumen lento como bcrypt o Argon2.
-
-### Demostración
-
-1. Abrir **Ingresar** en el menú y pulsar **Ingresar** con los campos vacíos: aparece el aviso y el campo queda marcado.
-2. En **Crear cuenta**, escribir claves distintas: aparece `Las claves no coinciden.`
-3. Ingresar con `lucia.benitez@gymcontrol.test` y una clave incorrecta: aparece `E-mail o clave incorrectos.`
-4. Ingresar con la clave de prueba: se muestra la vista del socio y el menú pasa a **Mi cuenta**.
-5. Pulsar **Renovar plan**: `comprar.html` abre con el Plan Semestral marcado y los datos precargados.
-6. Volver a **Mi cuenta** y pulsar **Cerrar sesión**: regresa la vista de visitante.
-7. Ingresar con `martin.rios@gymcontrol.test`: la membresía figura vencida.
-
-### Pruebas de la tarjeta 4
-
-`npm test` ejecuta también `tests/acceso.cjs`, con 35 comprobaciones en Google Chrome y fecha fija para evaluar los vencimientos. El registro se guarda en `docs/pruebas-tarjeta4.json` y las capturas en `docs/capturas-tarjeta4/`.
-
-## Tarjeta 11: formulario de reclamos y consultas
-
-Aporte de **Martins, Santino**. Se implementa la **opción 11: Formulario de reseñas, opiniones o reclamos**, acotada a reclamos y consultas sobre el Plan Mensual. La fundamentación utiliza **RNA** como proceso conceptual de PLN y vectorización para clasificar reclamos.
-
-- Eventos `input` y `submit` mediante `addEventListener()` en `js/app.js`.
-- Contador de caracteres en vivo con `.length`, con un mínimo de 10 y un máximo de 500.
-- `.trim()` descarta los reclamos formados solo por espacios.
-- Envío con `fetch()` y `async/await` a `data/confirmacion-reclamo.json`, que simula la respuesta del servidor.
-- Confirmación o error en el DOM; ante un fallo HTTP el formulario conserva el texto para reintentar.
-
-### Demostración
-
-1. Abrir la ficha del **Plan Mensual** y bajar hasta **Reclamos y consultas**.
-2. Escribir: el contador se actualiza con cada tecla.
-3. Enviar `corto`: aparece el aviso del mínimo de 10 caracteres y no se hace la petición.
-4. Enviar un reclamo válido: aparece la confirmación y el formulario se vacía.
-
-### Pruebas de la tarjeta 11
-
-`npm test` ejecuta también `tests/reclamos.cjs`, con 12 comprobaciones en Google Chrome. El registro se guarda en `docs/pruebas-tarjeta11.json` y las capturas en `docs/capturas-tarjeta11/`.
-
-## Documentación
-
-El análisis y diseño de la aplicación se encuentra en [`docs/Gym_Control_AE1_Analisis_y_Diseno.pdf`](docs/Gym_Control_AE1_Analisis_y_Diseno.pdf).
-
-Las capturas de las validaciones de la pantalla de compra estan en [`docs/capturas/`](docs/capturas).
-
-La Actividad Evaluativa 2 se entrega con la plantilla institucional de la UCP:
-
-- [Informe grupal en PDF, con las tarjetas 3, 4 y 11](docs/Martins%20-%20Olexyn%20-%20Tarnoski_Actividad%20Evaluativa%202.pdf).
-- [Informe grupal editable en Word](docs/Martins%20-%20Olexyn%20-%20Tarnoski_Actividad%20Evaluativa%202.docx).
-- [Informe individual de Santiago Tarnoski en PDF: tarjeta 3 y SOHDM](docs/Tarnoski%20Santiago_Informe%20Individual_Actividad%20Evaluativa%202.pdf).
-- [Informe individual de Santiago Tarnoski editable en Word](docs/Tarnoski%20Santiago_Informe%20Individual_Actividad%20Evaluativa%202.docx).
-- [Mapa navegacional editable de tarjeta 3](docs/mapa-navegacional-tarjeta3.mmd).
-- [Capturas de tarjeta 3](docs/capturas-tarjeta3/).
-- [Registro de pruebas de tarjeta 3](docs/pruebas-tarjeta3.json).
-- [Diagrama de vistas VSDM de tarjeta 4](docs/vistas-vsdm-tarjeta4.svg).
-- [Capturas de tarjeta 4](docs/capturas-tarjeta4/).
-- [Registro de pruebas de tarjeta 4](docs/pruebas-tarjeta4.json).
-- [Mapa navegacional editable de tarjeta 11](docs/mapa-navegacional-tarjeta11.mmd).
-- [Capturas de tarjeta 11](docs/capturas-tarjeta11/).
-- [Registro de pruebas de tarjeta 11](docs/pruebas-tarjeta11.json).
-
-## Integrantes
-
-- Martins, Santino
-- Olexyn, Franco
-- Tarnoski, Santiago
-
-Profesor: Sicardi, Dante.
+La documentación anterior y las contribuciones originales permanecen disponibles en el historial Git. Los commits de la AE4 identifican su autoría real.
