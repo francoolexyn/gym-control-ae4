@@ -1414,3 +1414,62 @@ tbody tr:hover {
 .mensaje-reclamo:empty {
   display: none;
 }
+
+/* Componentes de la SPA y ajustes de accesibilidad de la maqueta. */
+:root { --color-gray-500: #536471; }
+
+:where(a, button, input, textarea, [tabindex]):focus-visible,
+.button:focus-visible, .view-switch:focus-visible, .text-link:focus-visible,
+.main-nav a:focus-visible, .brand:focus-visible, .breadcrumb a:focus-visible {
+  outline: 3px solid #063d91;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px #fff;
+}
+
+[data-vista] h1:focus, #saludo-socio:focus, #titulo-editor:focus, main:focus { outline: none; }
+#estado-cupon:empty, .feedback:empty { margin: 0; }
+.feedback:not(:empty) { margin: .75rem 0 0; }
+.feedback.error { color: #952a22; }
+.feedback.exito { color: #075c4d; }
+
+.form-group textarea {
+  width: 100%;
+  border: 1px solid #87949e;
+  border-radius: var(--radius-sm);
+  padding: .8rem;
+  font: inherit;
+  resize: vertical;
+}
+.form-group input { border-color: #87949e; min-width: 0; }
+.form-group input::placeholder { color: var(--color-gray-500); }
+.catalog-toolbar { margin-bottom: 1rem; }
+.catalog-toolbar input { width: 100%; }
+.choice-card { font: inherit; text-align: left; color: var(--color-navy-950); }
+.choice-card[aria-pressed="true"] { background: #dff9f3; border: 2px solid #067564; }
+.choice-card { min-height: 2.75rem; }
+.choice-price { white-space: nowrap; }
+button:disabled { cursor: wait; opacity: .65; }
+.link-grupo { display: flex; gap: .6rem; flex-wrap: wrap; }
+.plan-card h2 { margin-bottom: .4rem; }
+.plan-card { min-width: 0; }
+.plan-card :where(h2, p), .product-summary h1, .lista-admin h3 { overflow-wrap: anywhere; }
+.product-summary, .member-panel { min-width: 0; }
+.reclamo-section { margin-top: 2rem; }
+.admin-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
+.admin-layout .form-actions { margin-top: 1rem; }
+.lista-admin { display: grid; gap: .85rem; margin-top: 1rem; }
+.lista-admin article, .historial-item { padding: 1rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-sm); }
+.historial-item { margin-bottom: .75rem; }
+.historial-item p { margin-bottom: 0; }
+.confirmacion { margin-bottom: 1rem; }
+.tabla-responsive { overflow: visible; }
+.tabla-responsive td, .tabla-responsive th { overflow-wrap: anywhere; }
+.tabla-responsive table { min-width: 0; }
+
+@media (max-width: 48rem) {
+  .admin-layout { grid-template-columns: 1fr; }
+  .tabla-responsive td, .tabla-responsive th { padding: .5rem .35rem; font-size: .82rem; }
+  .tabla-responsive .button { padding: .35rem; white-space: normal; }
+  .tabla-responsive table { table-layout: fixed; }
+  .tabla-responsive th:nth-child(4) { width: 27%; }
+}
