@@ -7,6 +7,7 @@ Gym Control permite consultar y comparar planes de gimnasio, elegir una membres�
 - [Análisis y diseño de la AE1](docs/Gym_Control_AE1_Analisis_y_Diseno.pdf)
 - [Informe técnico final de la AE4](docs/Gym_Control_AE4_Informe_Tecnico.pdf)
 - [Guion del coloquio](docs/Defensa_AE4.md)
+- [Aportes registrados y tareas del equipo](docs/Aportes_AE4.md)
 - [Evidencias de Lighthouse y pruebas](docs/evidencias/README.md)
 
 ## Estructura
