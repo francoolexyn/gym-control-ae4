@@ -1,5 +1,7 @@
 # Gym Control · AE4 / TIFAS
 
+**Integrantes** — Santiago Tarnoski, Franco Olexyn y Santino Martins.
+
 Gym Control permite consultar y comparar planes de gimnasio, elegir una membresía y consultar su vigencia. El administrador gestiona el catálogo. La aplicación reúne la portada, la tabla, las tarjetas, el detalle y el formulario de la AE1 en una SPA con JavaScript Vanilla. PHP controla las operaciones y PDO conecta con la base MySQL mediante el controlador `pdo_mysql`.
 
 - [Análisis y diseño de la AE1](docs/Gym_Control_AE1_Analisis_y_Diseno.pdf)

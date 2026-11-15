@@ -1,5 +1,7 @@
 # Guion de defensa · Gym Control AE4
 
+La entrega es grupal. Cada integrante responde individualmente las preguntas de fundamentación durante la defensa.
+
 ## 0:00 a 3:00 · Recorrido funcional por teclado
 
 Prepará XAMPP, una cuenta de socio, una cuenta de administrador y el catálogo importado. Abrí la portada. Usá Tab para enfocar controles y Enter para activarlos. Escribí el texto de los formularios cuando corresponda.
